@@ -82,7 +82,7 @@ class AugmentingPath(Scene):
                 self.play(bottom_nodes_dict[l].animate.set_fill(color=GREEN))
         # print("visited:",visited)
         frame_height = config.frame_height
-        L_tex = MathTex("L: "+",".join(L), color=RED).move_to(UP*(frame_height/2-0.5))
+        L_tex = MathTex(r"\text{Starts with L}: ["+",".join(L)+"]", color=RED).move_to(UP*(frame_height/2-0.5))
         self.play(Write(L_tex))
         while len(L) > 0:
             a = L.pop(0)
@@ -94,7 +94,7 @@ class AugmentingPath(Scene):
             else:
                 self.play(bottom_nodes_dict[a].animate.set_fill(color=YELLOW))
                 self.play(Indicate(bottom_nodes_dict[a]))
-            L_tex_new = (MathTex("L: "+",".join(L), color=BLACK)).move_to(UP*(frame_height/2-0.5))
+            L_tex_new = (MathTex("L: ["+",".join(L)+"]", color=BLACK)).move_to(UP*(frame_height/2-0.5))
             self.play(ReplacementTransform(L_tex, L_tex_new))
             if a in X:
                 nbrs = sorted(edges[a])
@@ -109,6 +109,9 @@ class AugmentingPath(Scene):
                         pred[b] = a
                         if b in M:
                             L.append(b)
+                            L_tex_new_new = (MathTex("L: ["+",".join(L)+"]", color=BLACK)).move_to(UP*(frame_height/2-0.5))
+                            self.play(ReplacementTransform(L_tex_new, L_tex_new_new))
+                            L_tex_new = L_tex_new_new
                         else:
                             
                             print("M: ",M)
@@ -125,6 +128,11 @@ class AugmentingPath(Scene):
                                 self.play(bottom_nodes_dict[a].animate.set_fill(color=GREEN))
                             self.play(FadeOut(L_tex_new))
                             self.wait(0.5)
+                            P_text = (MathTex(r"\text{Found augmenting path}: ["+",".join(P)+"]", color=BLUE)).move_to(UP*(frame_height/2-0.5))
+                            self.play(Write(P_text))
+                            self.wait(0.5)
+                            self.play(FadeOut(P_text))
+                            self.wait(0.5)
                             return P
             else:
                 b = M[a]
@@ -136,8 +144,11 @@ class AugmentingPath(Scene):
                 self.play(bottom_nodes_dict[b].animate.set_fill(color=GREEN))
                 pred[b] = a
                 L.append(b)
+                L_tex_new_new = (MathTex("L: ["+",".join(L)+"]", color=BLACK)).move_to(UP*(frame_height/2-0.5))
+                self.play(ReplacementTransform(L_tex_new, L_tex_new_new))
+                L_tex_new = L_tex_new_new
             # print(L)
-            L_tex = (MathTex(f"L: "+",".join(L), color=BLUE)).move_to(UP*(frame_height/2-0.5))
+            L_tex = (MathTex(f"L: ["+",".join(L)+"]", color=BLUE)).move_to(UP*(frame_height/2-0.5))
             self.play(ReplacementTransform(L_tex_new, L_tex))
             if a in top_nodes_dict:
                 self.play(top_nodes_dict[a].animate.set_fill(color=GREEN))
@@ -145,6 +156,11 @@ class AugmentingPath(Scene):
                 self.play(bottom_nodes_dict[a].animate.set_fill(color=GREEN))
         self.wait(0.5)
         self.play(FadeOut(L_tex))
+        self.wait(0.5)
+        end_Text = (Text(f"No augmenting paths found.", color=BLUE)).move_to(UP*(frame_height/2-0.5))
+        self.play(Write(end_Text))
+        self.wait(0.5)
+        self.play(FadeOut(end_Text))
         self.wait(0.5)
     
     def maximum_matching(self,B,top_nodes_dict,bottom_nodes_dict,edge_lines):
